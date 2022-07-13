@@ -20,6 +20,7 @@ class RequestQueueProvider extends ChangeNotifier {
   void resetCount() {
     _requestCount = 0;
     _requestCompleted = 0;
+      notifyListeners();
   }
 
   void startPainting() {
@@ -43,7 +44,6 @@ class RequestQueueProvider extends ChangeNotifier {
   get isRequestsProcessingAndNotPainting {
     return processedPercentage != 0 && !isPainting;
   }
-
   void addRequestToQueue(Future request) {
     _requestCount++;
       queue.add(() => request).catchError((_,__) {
@@ -51,15 +51,6 @@ class RequestQueueProvider extends ChangeNotifier {
         notifyListeners();
       }).then((_) {
         _requestCompleted++;
-        if (_requestCompleted == _requestCount &&
-            isRequestsProcessingAndNotPainting) {
-          Future.delayed(const Duration(seconds: 1)).then((_) {
-            if (!isConnectionError) {
-              resetCount();
-              notifyListeners();
-            }
-          });
-        }
       });
       notifyListeners();
   }

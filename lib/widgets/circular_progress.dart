@@ -61,7 +61,7 @@ class CircleProgressBarState extends State<CircleProgressBar>
               backgroundColor: backgroundColor,
               foregroundColor: foregroundColor,
               percentage: valueTween.evaluate(_controller),
-              strokeWidth: 10,
+              strokeWidth: MediaQuery.of(context).size.width*0.05,
             ),
           );
         },
@@ -104,11 +104,11 @@ class CircleProgressBarPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final Offset center = size.center(Offset.zero);
-    final Size constrainedSize = Size(200, 200);
+    final Size constrainedSize = Size(strokeWidth, strokeWidth);
     final shortestSide = min(constrainedSize.width, constrainedSize.height);
     final foregroundPaint = Paint()
       ..color = foregroundColor
-      ..strokeWidth = strokeWidth
+      ..strokeWidth = strokeWidth*0.05
       ..strokeCap = StrokeCap.round
       ..style = PaintingStyle.stroke;
     final radius = (shortestSide / 2);
@@ -119,7 +119,7 @@ class CircleProgressBarPainter extends CustomPainter {
     if (backgroundColor != null) {
       final backgroundPaint = Paint()
         ..color = backgroundColor
-        ..strokeWidth = strokeWidth
+        ..strokeWidth = strokeWidth*0.05
         ..style = PaintingStyle.stroke;
       canvas.drawCircle(center, radius, backgroundPaint);
     }

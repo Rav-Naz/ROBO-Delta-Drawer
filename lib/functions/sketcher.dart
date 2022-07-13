@@ -2,7 +2,9 @@ import '../classes/drawn_line.dart';
 import 'package:flutter/material.dart';
 
 class Sketcher extends CustomPainter {
-  final List<DrawnLine> lines;
+  final List<dynamic> lines;
+  final _selectedColor = const Color.fromARGB(255, 30, 111, 233);
+  final _selectedWidth = 2.0;
 
   Sketcher({required this.lines});
 
@@ -17,15 +19,9 @@ class Sketcher extends CustomPainter {
       if (lines[i] == null) continue;
       for (int j = 0; j < lines[i].path.length - 1; ++j) {
         if (lines[i].path[j] != null && lines[i].path[j + 1] != null) {
-          paint.color = lines[i].color;
-          paint.strokeWidth = lines[i].width;
-          if(lines[i].path[j] != null) {
-            if(lines[i].path[j + 1] != null) {
-            Offset path1 = lines[i].path[j] as Offset;
-            Offset path2 = lines[i].path[j + 1] as Offset;
-            canvas.drawLine(path1, path2, paint);
-            }
-          }
+          paint.color = _selectedColor;
+          paint.strokeWidth = _selectedWidth;
+          canvas.drawLine(lines[i].path[j], lines[i].path[j + 1], paint);
         }
       }
     }

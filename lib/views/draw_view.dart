@@ -52,10 +52,11 @@ class _DrawViewState extends State<DrawView> {
                       );
                     }),
                     IconButton(
-                      onPressed: () => {paperWidget.clear()},
+                      onPressed: Provider.of<RequestQueueProvider>(context)
+                .remainingRequest == 0 ? () => {paperWidget.clear()} : null,
                       icon: const Icon(Icons.delete),
                       color: Colors.white,
-                      iconSize: 50.0,
+                      iconSize: 50.0
                     )
                   ],
                 ),
@@ -66,18 +67,17 @@ class _DrawViewState extends State<DrawView> {
         ),
         AnimatedOpacity(
           opacity: Provider.of<RequestQueueProvider>(context)
-                .isRequestsProcessingAndNotPainting ? 1.0 : 0.0,
+                .isRequestsProcessingAndNotPainting && Provider.of<RequestQueueProvider>(context)
+                .isConnectionError ? 1.0 : 0.0,
           duration: const Duration(milliseconds: 500),
           child: Visibility(
             visible: Provider.of<RequestQueueProvider>(context)
-                .isRequestsProcessingAndNotPainting,
+                .isRequestsProcessingAndNotPainting && Provider.of<RequestQueueProvider>(context)
+                .isConnectionError,
             child: Container(
-                color: Provider.of<RequestQueueProvider>(context)
-                .isConnectionError ? Color.fromARGB(153, 240, 6, 6) : Color.fromARGB(153, 31, 25, 25),
+                color:  Color.fromARGB(153, 240, 6, 6),
                 child: Center(
-                  child: Provider.of<RequestQueueProvider>(context)
-                .isConnectionError ?
-                Column(
+                  child: Column(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -92,30 +92,6 @@ class _DrawViewState extends State<DrawView> {
                       Text("Utracono połączenie. Sprawdź komunikację z serwerem a nastepnie zrestartuj aplikacje.", style: TextStyle(fontSize: 20.0, color: Colors.white),)
                     ],
                   )
-                :
-                Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Container(
-                        margin: EdgeInsets.all(30.0),
-                        child: SizedBox(
-                          width: 200.0,
-                          height: 200.0,
-                          child: Stack(
-                            children: [ CircleProgressBar(
-                              foregroundColor: Color.fromARGB(255, 247, 204, 13),
-                              backgroundColor: Colors.transparent,
-                              value: Provider.of<RequestQueueProvider>(context).processedPercentage,
-                            ),
-                            Center(child: Text("${(Provider.of<RequestQueueProvider>(context).processedPercentage*100 as double).toInt()}%", style: TextStyle(fontSize: 50.0, color: Color.fromARGB(255, 247, 204, 13)),))
-                            ],
-                          ),
-                        ),
-                      ),
-                      Text("Trwa rysowanie obrazka. Proszę czekać.", style: TextStyle(fontSize: 20.0, color: Color.fromARGB(255, 247, 204, 13)),)
-                    ],
-                  ),
                 ),
             )
           ),
