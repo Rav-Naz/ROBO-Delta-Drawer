@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:queue/queue.dart';
 
 class RequestQueueProvider extends ChangeNotifier {
-  final queue = Queue();
+  final queue = Queue(delay: const Duration(milliseconds: 300));
   late final remainingItemsStream;
   bool isPainting = false;
   bool isConnectionError = false;
@@ -44,7 +44,7 @@ class RequestQueueProvider extends ChangeNotifier {
   get isRequestsProcessingAndNotPainting {
     return processedPercentage != 0 && !isPainting;
   }
-  void addRequestToQueue(Future request) {
+  void addRequestToQueue(Future<dynamic> request) {
     _requestCount++;
       queue.add(() => request).catchError((_,__) {
         isConnectionError = true;
