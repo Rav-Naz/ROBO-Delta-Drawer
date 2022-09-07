@@ -26,12 +26,12 @@ class PaperWidget extends StatefulWidget {
 
 class _PaperWidgetState extends State<PaperWidget> {
   final _workspaceColor = Color.fromARGB(255, 250, 232, 167);
-  final Offset _minDeltaCoords = const Offset(0, 0);
-  final Offset _maxDeltaCoords = const Offset(2, 2);
+  final Offset _minDeltaCoords = const Offset(-80, -80);
+  final Offset _maxDeltaCoords = const Offset(80, 80);
   double _zWhilePrinting = 180.0;
   double _zIdle = 170.0;
   final double _pauseBetweenSavingPointsInMiliseconds = 50;
-  final int _delayBetweenSendingCoords = 200;
+  final int _delayBetweenSendingCoords = 10;
   final GlobalKey _sheetKey = GlobalKey();
   Size _sheetSize = const Size(0.0, 0.0);
   late RequestQueueProvider _requestQueueProvider;
@@ -41,7 +41,7 @@ class _PaperWidgetState extends State<PaperWidget> {
       StreamController<DrawnLine>.broadcast();
   int lastSavedPointTimestamp = DateTime.now().millisecondsSinceEpoch;
 
-  bool isDebug = true;
+  bool isDebug = false;
 
   DrawnLine line = DrawnLine([]);
   List<DrawnLine> lines = [];
@@ -71,7 +71,7 @@ class _PaperWidgetState extends State<PaperWidget> {
   }
 
   void _clear() async {
-    await sendCords(_minDeltaCoords.dx, _minDeltaCoords.dy, _zIdle);
+    await sendCords(0, 0, _zIdle);
     setState(() {
       lines = [];
       line = DrawnLine([]);
@@ -152,12 +152,12 @@ class _PaperWidgetState extends State<PaperWidget> {
     var response = await http.post(
       Uri.parse(isDebug
           ? 'http://127.0.0.1:5000/companies'
-          : 'http://raspberrypi:8000/deltabot/serialRelay'),
+          : 'http://localhost:8000/deltabot/serialRelay'),
       headers: <String, String>{
         'Content-Type': 'application/json; charset=UTF-8',
       },
       body: jsonEncode([
-        ['C', deltaCoordsXY.dx, deltaCoordsXY.dy, z]
+        ['C', deltaCoordsXY.dx.toString(), deltaCoordsXY.dy.toString(), z.toString(), "50"]
       ]),
     );
     return response;
@@ -238,12 +238,12 @@ class _PaperWidgetState extends State<PaperWidget> {
                 width: MediaQuery.of(context).size.height * 0.45,
                 child: Slider(
                     min: 0.0,
-                    max: 200.0,
+                    max: 250.0,
                     value: _zWhilePrinting,
                     onChanged: (val) => {
                       setState(() {
                         _zWhilePrinting =val;
-                        _zIdle = (_zWhilePrinting-10).clamp(0, 200);
+                        _zIdle = (_zWhilePrinting-10).clamp(0, 250);
                       })
                     },
                     activeColor: const Color.fromARGB(255, 247, 204, 13),
